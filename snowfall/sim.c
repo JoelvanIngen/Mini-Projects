@@ -9,6 +9,23 @@
 #include "grid.h"
 #include "render.h"
 
+static double normaliseRandom() {
+    return (double) rand() / (double) RAND_MAX; // NOLINT(cert-msc30-c, cert-msc50-cpp)
+}
+
+static void meltSnowflakes(Grid *grid) {
+    const int64_t row = SNOWFALL_GRID_HEIGHT - 1;
+    for (int64_t col = 0; col < SNOWFALL_GRID_WIDTH; col++) {
+        const int64_t idx = getGridIndex(col, row);
+        if (grid->colours[idx] == SNOW) {
+            const double random = normaliseRandom();
+            if (random < .011) {
+                grid->colours[idx] = EMPTY;
+            }
+        }
+    }
+}
+
 /* If a snowflake is on top of a pile, it will try to move downwards diagonally toward the right
  * This should prevent small noisy piles from forming
  * If this would cross the right grid boundary, will loop to the start (left)
@@ -68,10 +85,6 @@ static void moveSnowflakes(Grid* grid) {
     }
 }
 
-static double normaliseRandom() {
-    return (double) rand() / (double) RAND_MAX; // NOLINT(cert-msc30-c, cert-msc50-cpp)
-}
-
 static void tryAppendSnowflake(Grid* grid, const int64_t idx) {
     if (grid->colours[idx] == SNOW) { return; }
     grid->colours[idx] = SNOW;
@@ -80,7 +93,7 @@ static void tryAppendSnowflake(Grid* grid, const int64_t idx) {
 static void newSnowflakes(Grid* grid) {
     for (int64_t col = 0; col < SNOWFALL_GRID_WIDTH; col++) {
         const double random = normaliseRandom();
-        if (random < 0.1) {
+        if (random < 0.01) {
             // Index = col because row = 0, no conversion necessary
             tryAppendSnowflake(grid, col);
         }
@@ -89,6 +102,7 @@ static void newSnowflakes(Grid* grid) {
 
 /* Runs an iteration step and reports whether the window loop was terminated */
 static bool singleStepReportWindowClose(Grid* grid) {
+    meltSnowflakes(grid);
     moveSnowflakes(grid);
     newSnowflakes(grid);
     return snowfallRenderReportWindowClose(grid);
