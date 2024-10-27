@@ -19,7 +19,7 @@ static void meltSnowflakes(Grid *grid) {
         const int64_t idx = getGridIndex(col, row);
         if (grid->colours[idx] == SNOW) {
             const double random = normaliseRandom();
-            if (random < .011) {
+            if (random < SNOW_MELT_CHANCE) {
                 grid->colours[idx] = EMPTY;
             }
         }
@@ -93,7 +93,7 @@ static void tryAppendSnowflake(Grid* grid, const int64_t idx) {
 static void newSnowflakes(Grid* grid) {
     for (int64_t col = 0; col < SNOWFALL_GRID_WIDTH; col++) {
         const double random = normaliseRandom();
-        if (random < 0.01) {
+        if (random < SNOW_SPAWN_CHANCE) {
             // Index = col because row = 0, no conversion necessary
             tryAppendSnowflake(grid, col);
         }
