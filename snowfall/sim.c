@@ -9,16 +9,47 @@
 #include "grid.h"
 #include "render.h"
 
-static void tryMoveSingleSnowflake(Grid* grid, const int64_t idx) {
+/* If a snowflake is on top of a pile, it will try to move downwards diagonally toward the right
+ * This should prevent small noisy piles from forming
+ * If this would cross the right grid boundary, will loop to the start (left)
+ * If the right side is occupied too, will try left following the same logic */
+static void trySnowpileCollapse(Grid* grid, const int64_t row, const int64_t col, const int64_t idx) {
+    const int64_t newRow = row + 1;
+
+    // Immediate return if slowflake is already on the ground
+    if (newRow >= SNOWFALL_GRID_HEIGHT) return;
+
+    // Loopbacks if column exceeds valid grid columns on either side
+    const int64_t newColumnRight = (col + 1) % SNOWFALL_GRID_WIDTH;
+    const int64_t newColumnLeft = (col - 1) % SNOWFALL_GRID_WIDTH;
+
+    const int64_t newIndexRight = getGridIndex(newColumnRight, newRow);
+    const int64_t newIndexLeft = getGridIndex(newColumnLeft, newRow);
+
+    // Try both new options and apply if possible
+    if (grid->colours[newIndexRight] == EMPTY) {
+        grid->colours[newIndexRight] = SNOW;
+        grid->colours[idx] = EMPTY;
+    } else if (grid->colours[newIndexLeft] == EMPTY) {
+        grid->colours[newIndexLeft] = SNOW;
+        grid->colours[idx] = EMPTY;
+    }
+}
+
+static void tryMoveSingleSnowflake(Grid* grid, const int64_t row, const int64_t col) {
+    const int64_t idx = getGridIndex(col, row);
+
     // Immediate return if array at idx does not contain snowflake
-    if (grid->colours[idx] != SNOW) { return; }
+    if (grid->colours[idx] != SNOW) return;
 
     // Addition because the grid row index grows downward
     const int64_t newIndex = idx + SNOWFALL_GRID_WIDTH;
 
-    // Early return if next index would be out of bounds or is already occupied
-    if (newIndex >= SNOWFALL_GRID_SIZE) { return; }
-    if (grid->colours[newIndex] == SNOW) { return; }
+    // Early return if next index would be out of bounds
+    if (newIndex >= SNOWFALL_GRID_SIZE) return;
+
+    // Prevent pile of snow if it is on another snowflake
+    if (grid->colours[newIndex] == SNOW) return trySnowpileCollapse(grid, row + 1, col, idx);
     
     grid->colours[newIndex] = SNOW;
     grid->colours[idx] = EMPTY;
@@ -26,8 +57,7 @@ static void tryMoveSingleSnowflake(Grid* grid, const int64_t idx) {
 
 static void moveRow(Grid* grid, const int64_t row) {
     for (int64_t col = 0; col < SNOWFALL_GRID_WIDTH; col++) {
-        const int64_t idx = getGridIndex(col, row);
-        tryMoveSingleSnowflake(grid, idx);
+        tryMoveSingleSnowflake(grid, row, col);
     }
 }
 
