@@ -19,6 +19,10 @@ void snowfallDestroyWindow() {
 
 static void drawSingleSnowflake(const Grid* grid, const int64_t row, const int64_t col) {
     const int64_t idx = getGridIndex(col, row);
+
+    // Immediate return if cell is empty
+    if (grid->colours[idx] == EMPTY) return;
+
     DrawRectangle((int) col * SNOWFALL_CELL_SIZE,
         (int) row * SNOWFALL_CELL_SIZE,
         SNOWFALL_CELL_SIZE,
@@ -36,7 +40,7 @@ static void drawSnowflakes(const Grid* grid) {
 
 bool snowfallRenderReportWindowClose(const Grid* grid) {
     BeginDrawing();
-    ClearBackground(SKYBLUE);
+    ClearBackground(BLACK);
     drawSnowflakes(grid);
     EndDrawing();
     return WindowShouldClose();
