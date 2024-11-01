@@ -10,5 +10,5 @@ pub const GRID_WIDTH: usize = 400;
 pub const GRID_HEIGHT: usize = 200;
 pub const CELL_SIZE: usize = 5;
 
-pub const TARGET_FIXED_FPS: bool = false;
-pub const FPS: f64 = 10.0;
+pub const TARGET_FIXED_FPS: bool = true;
+pub const FPS: f64 = 60.0;

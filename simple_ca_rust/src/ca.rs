@@ -83,7 +83,7 @@ fn single_iteration(grid: &mut Grid, ruleset: &HashMap<Box<[u8]>, u8>, r: usize)
 }
 
 fn wait_for_frame(start_time: f64, target_frame_time: f64) {
-    if TARGET_FIXED_FPS return;
+    if !TARGET_FIXED_FPS { return };
     
     let end_time = time::get_time();
     
