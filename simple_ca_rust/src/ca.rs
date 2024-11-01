@@ -42,14 +42,13 @@ fn create_rules(rule: usize, k: usize, r: usize) -> HashMap<Box<[u8]>, u8> {
     // Precompute sizes
     let neighbourhood_size = 2 * r + 1;
     let unique_states = k.pow(neighbourhood_size as u32);
-    let max_rule = k.pow(unique_states as u32);
 
     // Base k representation of the rule
     // This will be the output for every possible state
     let rule_repr = pad_zeros(base_10_to_base_k(rule, k), unique_states);
 
     // Create hashmap that to look up states to find the next state according to chosen rule
-    let mut state_to_next: HashMap<Box<[u8]>, u8> = HashMap::with_capacity(max_rule);
+    let mut state_to_next: HashMap<Box<[u8]>, u8> = HashMap::with_capacity(unique_states);
 
     // Populate hashmap
     for state_i in 0..unique_states {
@@ -104,16 +103,17 @@ async fn start_loop() {
 }
 
 fn check_parameter_validity(rule: usize, k: usize, r: usize, width: usize) {
-    if k > u8::MAX as usize {
-        panic!("Target base k ({k}) cannot be greater than 8 bits (max {:?})!", u8::MAX);
+    let max_k = VAL_TO_COLOR.len();
+    if k > max_k {
+        panic!("Target base k ({k}) cannot be greater than {max_k}!");
     }
-    
+
     let neighbourhood_size = 2 * r + 1;
-    
+
     if neighbourhood_size > width {
         panic!("Neighbourhood size of {neighbourhood_size} is greater than grid width of {width}!");
     }
-    
+
     let unique_states = k.pow(neighbourhood_size as u32);
     let max_rule = k.pow(unique_states as u32);
     

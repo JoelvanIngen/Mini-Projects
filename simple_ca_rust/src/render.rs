@@ -1,8 +1,6 @@
 use macroquad::prelude::*;
 use crate::grid::Grid;
-use crate::parameters::{CELL_SIZE, GRID_HEIGHT, GRID_WIDTH};
-
-const VAL_TO_COLOR: [Color; 2] = [WHITE, BLACK];
+use crate::parameters::{CELL_SIZE, GRID_HEIGHT, GRID_WIDTH, VAL_TO_COLOR};
 
 pub fn init() {
     request_new_screen_size((GRID_WIDTH * CELL_SIZE) as f32,
