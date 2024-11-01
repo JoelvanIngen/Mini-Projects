@@ -7,7 +7,7 @@ use crate::grid::Grid;
 use crate::parameters::*;
 use crate::render::{init, render};
 
-fn base_10_to_base_k(mut num: usize, k: usize, r: usize) -> Box<[u8]> {
+fn base_10_to_base_k(mut num: usize, k: usize) -> Box<[u8]> {
     let mut digits = Vec::new();
 
     while num > 0 {
@@ -17,13 +17,6 @@ fn base_10_to_base_k(mut num: usize, k: usize, r: usize) -> Box<[u8]> {
 
     digits.reverse();
     digits.into_boxed_slice()
-}
-
-fn base_k_to_base_10(num: Box<[u8]>, k: usize) -> usize {
-    num.iter()
-        .enumerate()
-        .map(|(i, &digit)| (digit as usize) * k.pow((num.len() - 1 - i) as u32))
-        .sum()
 }
 
 fn pad_zeros(k_repr: Box<[u8]>, n: usize) -> Box<[u8]> {
@@ -53,14 +46,14 @@ fn create_rules(rule: usize, k: usize, r: usize) -> HashMap<Box<[u8]>, u8> {
 
     // Base k representation of the rule
     // This will be the output for every possible state
-    let rule_repr = pad_zeros(base_10_to_base_k(rule, k, r), unique_states);
+    let rule_repr = pad_zeros(base_10_to_base_k(rule, k), unique_states);
 
     // Create hashmap that to look up states to find the next state according to chosen rule
     let mut state_to_next: HashMap<Box<[u8]>, u8> = HashMap::with_capacity(max_rule);
 
     // Populate hashmap
     for state_i in 0..unique_states {
-        let rule_base_k = pad_zeros(base_10_to_base_k(state_i, k, r), neighbourhood_size);
+        let rule_base_k = pad_zeros(base_10_to_base_k(state_i, k), neighbourhood_size);
         state_to_next.insert(rule_base_k.clone(), rule_repr[unique_states - state_i - 1]);
 
         let rpr = rule_repr[unique_states - state_i - 1];

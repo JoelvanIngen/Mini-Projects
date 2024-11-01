@@ -1,4 +1,3 @@
-use std::io::{stdout, Write};
 use crate::ca::entry;
 
 mod ca;

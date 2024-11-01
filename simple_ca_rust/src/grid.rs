@@ -25,8 +25,6 @@ impl Grid {
     
     pub fn width(&self) -> usize { self.width }
     
-    pub fn height(&self) -> usize { self.height }
-    
     pub fn get_slice_from_prev(&self, col: usize, r: usize) -> Box<[u8]> {
         (col as isize - r as isize .. col as isize + r as isize + 1)
             .map(|i| self.cells[self.prev_row][pos_mod(i, self.width as isize) as usize])
