@@ -104,16 +104,21 @@ async fn start_loop() {
 }
 
 fn check_parameter_validity(rule: usize, k: usize, r: usize, width: usize) {
+    if k > u8::MAX as usize {
+        panic!("Target base k ({k}) cannot be greater than 8 bits (max {:?})!", u8::MAX);
+    }
+    
     let neighbourhood_size = 2 * r + 1;
+    
+    if neighbourhood_size > width {
+        panic!("Neighbourhood size of {neighbourhood_size} is greater than grid width of {width}!");
+    }
+    
     let unique_states = k.pow(neighbourhood_size as u32);
     let max_rule = k.pow(unique_states as u32);
     
     if rule > max_rule {
         panic!("Rule {rule} is greater than maximum of {max_rule}!");
-    }
-    
-    if neighbourhood_size > width {
-        panic!("Neighbourhood size of {neighbourhood_size} is greater than grid width of {width}!");
     }
 }
 
